@@ -14,12 +14,9 @@ import Auth from "../utils/auth";
 import { ADD_FRIEND } from "../utils/mutations";
 
 const ProfileMain = (props) => {
-  const [addFriend] = useMutation(ADD_FRIEND);
-
   const { username: userParam } = useParams();
 
-  // to be used later for adding friends
-  //   const [addFriend] = useMutation(ADD_FRIEND);
+  const [addFriend] = useMutation(ADD_FRIEND);
   const { loading, data } = useQuery(userParam ? QUERY_USER : QUERY_ME, {
     variables: {
       input: {
@@ -28,12 +25,12 @@ const ProfileMain = (props) => {
     },
   });
 
-  const user = data?.me || data?.user || {};
-
   // navigate to personal profile page if username is yours
   if (Auth.loggedIn() && Auth.getProfile().data.username === userParam) {
     return <Navigate to="/profile" />;
   }
+  const user = data?.me || data?.user || {};
+
 
   if (loading) {
     return <div>Loading...</div>;
@@ -79,7 +76,9 @@ const ProfileMain = (props) => {
                 />
               </Tab.Pane>
               <Tab.Pane eventKey="projects">
-                <ProjectForm />
+                {(Auth.loggedIn() && user._id === Auth.getProfile().data._id) && (
+                  <ProjectForm />
+                )}
                 <ProjectList projects={user.projects} />
               </Tab.Pane>
               <Tab.Pane eventKey="find-friends">
@@ -98,11 +97,13 @@ const ProfileMain = (props) => {
                 <Nav.Item>
                   <Nav.Link eventKey="projects">Projects</Nav.Link>
                 </Nav.Item>
-                <Nav.Item>
-                  <Nav.Link eventKey="find-friends">Find Friends</Nav.Link>
-                </Nav.Item>
+                {(Auth.loggedIn() && user._id === Auth.getProfile().data._id) && (
+                  <Nav.Item>
+                    <Nav.Link eventKey="find-friends">Find Friends</Nav.Link>
+                  </Nav.Item>
+                )}
               </Nav>
-              {(Auth.loggedIn() && !user._id === Auth.getProfile().data._id) &&
+              {(Auth.loggedIn() && user._id !== Auth.getProfile().data._id) &&
                 <Button
                   variant="success"
                   className="mt-3 fw-bold"
