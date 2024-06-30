@@ -55,7 +55,7 @@ const ProfileMain = (props) => {
       console.error(e);
     }
   };
-
+  
   return (
     <Container className="py-4">
       <Tab.Container
@@ -103,7 +103,7 @@ const ProfileMain = (props) => {
                   </Nav.Item>
                 )}
               </Nav>
-              {(Auth.loggedIn() && user._id !== Auth.getProfile().data._id) &&
+              {(Auth.loggedIn() && user._id !== Auth.getProfile().data._id && !Auth.getProfile().data.friends.includes(user._id)) &&
                 <Button
                   variant="success"
                   className="mt-3 fw-bold"
